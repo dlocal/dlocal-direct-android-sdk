@@ -56,7 +56,7 @@ Add dLocal Direct SDK dependency to the application's [build.gradle](https://bit
 ```groovy
 dependencies {
    ... 
-   implementation 'com.dlocal.android:dlocal-direct:0.0.1' 
+   implementation 'com.dlocal.android:dlocal-direct:0.0.2' 
    ...
 }    
 ```  
@@ -163,6 +163,18 @@ val cardExpert = DLCardExpert(countryCode = "UY")
 
 Card data is specific for the country defined at the initialization step of the sdk instance. In below examples we will assume that the sdk was initialized with country code for Uruguay ("UY").
 
+For those countries that we don't have data for, you can still use a global expert as follows:
+
+```kotlin
+import com.dlocal.direct.DLCardExpert
+
+val cardExpert = DLCardExpert.global
+val supportedBrands = cardExpert.allBrands.map { it.niceName }
+println("Globally accepted brands: $supportedBrands")
+```
+
+This global expert contains globally accepted card brands like Visa and Mastercard among others. 
+
 ### Browse cards brands
 
 ```kotlin
@@ -207,56 +219,48 @@ cardExpert.detectBrand(cardNumber = "") // returns [Visa, Oca, Mastercard, Diner
 
 ## Fields Validation
 
-### Possible results
-
-Validation of card fields can result in one of the following `DLValidationResult` type:
-
-- `PotentiallyValid` meaning that the value entered is potentially valid but not yet valid, this means that by adding additional characters it could become valid
-- `Valid` meaning that the value entered is valid
-- `Invalid` meaning that the value entered is invalid and will never be valid by adding additional characters to it
-
 ### Validate a card number
 
 ```kotlin
-cardExpert.validateCardNumber(cardNumber = "") // returns PotentiallyValid
-cardExpert.validateCardNumber(cardNumber = "4") // returns PotentiallyValid
-cardExpert.validateCardNumber(cardNumber = "4242 4242 4242 4242") // returns Valid
-cardExpert.validateCardNumber(cardNumber = "4242424242424242") // returns Valid
+cardExpert.validateCardNumber(cardNumber = "") // false
+cardExpert.validateCardNumber(cardNumber = "4") // false
+cardExpert.validateCardNumber(cardNumber = "4242 4242 4242 4242") // true
+cardExpert.validateCardNumber(cardNumber = "4242424242424242") // true
 
-cardExpert.validateCardNumber(cardNumber = "4242424242424241") // returns Invalid (fails luhn check)
-cardExpert.validateCardNumber(cardNumber = "4A") // returns Invalid
+cardExpert.validateCardNumber(cardNumber = "4242424242424241") // false (fails luhn check)
+cardExpert.validateCardNumber(cardNumber = "4A") // false
 ```
 
 ### Validate expiration date
 
 ```kotlin
-cardExpert.validateExpirationDate(expirationDate = "") // returns PotentiallyValid
-cardExpert.validateExpirationDate(expirationDate = "0") // returns PotentiallyValid
-cardExpert.validateExpirationDate(expirationDate = "02") // returns PotentiallyValid
-cardExpert.validateExpirationDate(expirationDate = "02/") // returns PotentiallyValid
-cardExpert.validateExpirationDate(expirationDate = "02/2") // returns PotentiallyValid
-cardExpert.validateExpirationDate(expirationDate = "02/26") // returns Valid
-cardExpert.validateExpirationDate(expirationDate = "2/26") // returns Valid
+cardExpert.validateExpirationDate(expirationDate = "") // false
+cardExpert.validateExpirationDate(expirationDate = "0") // false
+cardExpert.validateExpirationDate(expirationDate = "02") // false
+cardExpert.validateExpirationDate(expirationDate = "02/") // false
+cardExpert.validateExpirationDate(expirationDate = "02/2") // false
+cardExpert.validateExpirationDate(expirationDate = "02/26") // true
+cardExpert.validateExpirationDate(expirationDate = "2/26") // true
 
-cardExpert.validateExpirationDate(expirationDate = "13") // returns Invalid
-cardExpert.validateExpirationDate(expirationDate = "7/22") // returns Invalid (expired)
-cardExpert.validateExpirationDate(expirationDate = "8/2022") // returns Invalid
+cardExpert.validateExpirationDate(expirationDate = "13") // false
+cardExpert.validateExpirationDate(expirationDate = "7/22") // false (expired)
+cardExpert.validateExpirationDate(expirationDate = "8/2022") // false
 ```
 
 ### Validate security code
 
-Different card brands have different rules for validating security codes, this is why this function will ask you to pass a card brand as parameter.
+The following will validate the security code using standard security code rules:
 
 ```kotlin
 val brands = cardExpert.detectBrand(cardNumber = "4242 4242 4242 4242") // returns [Visa]
 
-cardExpert.validateSecurityCode(securityCode = "", brands = brands) // returns PotentiallyValid
-cardExpert.validateSecurityCode(securityCode = "1", brands = brands) // returns PotentiallyValid
-cardExpert.validateSecurityCode(securityCode = "12", brands = brands) // returns PotentiallyValid
-cardExpert.validateSecurityCode(securityCode = "123", brands = brands) // returns Valid
+cardExpert.validateSecurityCode(securityCode = "", brands = brands) // false
+cardExpert.validateSecurityCode(securityCode = "1", brands = brands) // false
+cardExpert.validateSecurityCode(securityCode = "12", brands = brands) // false
+cardExpert.validateSecurityCode(securityCode = "123", brands = brands) // true
 
-cardExpert.validateSecurityCode(securityCode = "1234", brands = brands) // returns Invalid, security code for Visa cards are always of length three
-cardExpert.validateSecurityCode(securityCode = "12A", brands = brands) // returns Invalid, security codes for Visa cards can only contain numbers
+cardExpert.validateSecurityCode(securityCode = "1234", brands = brands) // false, security code for Visa cards are always of length three
+cardExpert.validateSecurityCode(securityCode = "12A", brands = brands) // false, security codes for Visa cards can only contain numbers
 ```
 
 If you want for instance to allow input of security codes for any card that is valid in Uruguay:
@@ -264,8 +268,8 @@ If you want for instance to allow input of security codes for any card that is v
 ```kotlin
 val uruguayBrands = cardExpert.allBrands
 
-cardExpert.validateSecurityCode(securityCode = "123", brands = uruguayBrands) // returns Valid
-cardExpert.validateSecurityCode(securityCode = "1234", brands = uruguayBrands) // returns Invalid as there is no supported card in Uruguay that allows security code length of four digits
+cardExpert.validateSecurityCode(securityCode = "123", brands = uruguayBrands) // true
+cardExpert.validateSecurityCode(securityCode = "1234", brands = uruguayBrands) // false as there is no supported card in Uruguay that allows security code length of four digits
 ```
 
 ## Input Formatting
