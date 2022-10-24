@@ -56,7 +56,7 @@ Add dLocal Direct SDK dependency to the application's [build.gradle](https://bit
 ```groovy
 dependencies {
    ... 
-   implementation 'com.dlocal.android:dlocal-direct:0.0.2' 
+   implementation 'com.dlocal.android:dlocal-direct:0.0.3' 
    ...
 }    
 ```  
@@ -320,13 +320,13 @@ If your form contains a single field for expiration date then this is the functi
 cardExpert.formatExpirationDate(date = "") // returns ""
 cardExpert.formatExpirationDate(date = "1") // returns "1" (expecting a second number to understand whether this is month "01" or "11" or "12")
 cardExpert.formatExpirationDate(date = "11") // returns "11/" (automatically inserts "/" character so user only has to enter numbers)
-cardExpert.formatExpirationDate(date = "2") // returns "02/" (automatically formats into month "02" and inserts "/")
-cardExpert.formatExpirationDate(date = "2/") // returns "02/" (formats "2" into "02")
-cardExpert.formatExpirationDate(date = "2/A") // returns "02/" (disallows entering any non numeric character)
-cardExpert.formatExpirationDate(date = "2/2") // returns "02/2"
-cardExpert.formatExpirationDate(date = "2/20") // returns "02/20"
-cardExpert.formatExpirationDate(date = "2/202") // returns "02/202"
-cardExpert.formatExpirationDate(date = "2/2022") // returns "02/22" (shortens year)
+cardExpert.formatExpirationDate(date = "02") // returns "02/" (automatically formats into month "02" and inserts "/")
+cardExpert.formatExpirationDate(date = "45") // returns "04/5" (formats "4" into "04")
+cardExpert.formatExpirationDate(date = "2/A") // returns "2" (disallows entering any non numeric character)
+cardExpert.formatExpirationDate(date = "22") // returns "02/2"
+cardExpert.formatExpirationDate(date = "220") // returns "02/20"
+cardExpert.formatExpirationDate(date = "2205") // returns "02/20"
+cardExpert.formatExpirationDate(date = "1222") // returns "12/22"
 ```
 
 ### Format expiration month and year (separated fields)
@@ -350,7 +350,7 @@ cardExpert.formatExpirationMonth(month = "11") // returns "11"
 cardExpert.formatExpirationMonth(month = "12") // returns "12"
 
 cardExpert.formatExpirationMonth(month = "121") // returns "12" (disallows entering a third character)
-cardExpert.formatExpirationMonth(month = "13") // returns "13" (this is an invalid month so we cannot format it)
+cardExpert.formatExpirationMonth(month = "13") // returns "01" (this is an invalid month so we take only the first digit)
 cardExpert.formatExpirationMonth(month = "1A") // returns "1" (does not allow entering non numeric characters)
 cardExpert.formatExpirationMonth(month = "1 ") // returns "1" (does not allow spaces)
 ```
