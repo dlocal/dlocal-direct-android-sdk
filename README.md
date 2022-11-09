@@ -56,7 +56,7 @@ Add dLocal Direct SDK dependency to the application's [build.gradle](https://bit
 ```groovy
 dependencies {
    ... 
-   implementation 'com.dlocal.android:dlocal-direct:0.0.3' 
+   implementation 'com.dlocal.android:dlocal-direct:0.1.0' 
    ...
 }    
 ```  
