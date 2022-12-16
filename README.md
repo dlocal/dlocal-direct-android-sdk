@@ -56,7 +56,7 @@ Add dLocal Direct SDK dependency to the application's [build.gradle](https://bit
 ```groovy
 dependencies {
    ... 
-   implementation 'com.dlocal.android:dlocal-direct:0.1.0' 
+   implementation 'com.dlocal.android:dlocal-direct:0.2.0' 
    ...
 }    
 ```  
@@ -124,7 +124,7 @@ dlocal.tokenizeCard(cardData, onSuccess = { token ->
 import com.dlocal.direct.DLCardTokenizer
 
 dlocal.getBinInformation(
-    cardNumber = "CARD-NUMBER", 
+    binNumber = "BIN-NUMBER", 
     onSuccess = { binInfo ->
         println("Successfully obtained bin information: ${binInfo.bin}")
     }, onError = { error ->
@@ -139,7 +139,7 @@ dlocal.getBinInformation(
 import com.dlocal.direct.DLCardTokenizer
 
 dlocal.createInstallmentsPlan(
-    cardNumber = "CARD-NUMBER",
+    binNumber = "BIN-NUMBER",
     currencyCode = "CURRENCY-CODE",
     amount = 500.0,
     onSuccess = { installments ->
@@ -197,27 +197,38 @@ cardExpert.brand(withIdentifier = DLCardBrandIdentifier.VISA)?.let { visa ->
 val cardExpert = DLCardExpert(countryCode = "UY")
 
 // Detect card brand from a complete card number
-cardExpert.detectBrand(cardNumber = "4242 4242 4242 4242") // returns [Visa]
+cardExpert.detectBrand(binNumber = "4242 42") // returns [Visa]
 
 // Supports both formatted and raw card numbers
-cardExpert.detectBrand(cardNumber = "4242424242424242") // returns [Visa]
+cardExpert.detectBrand(binNumber = "424242") // returns [Visa]
 
 // Detect card brand from an incomplete card number
 // In this case multiple card brands start with number "4", in order to find out which card is being entered user will need to enter additional numbers
-cardExpert.detectBrand(cardNumber = "4") // returns [Visa, Visa Débito, Maestro]
+cardExpert.detectBrand(binNumber = "4") // returns [Visa, Visa Débito, Maestro]
 
 // Cards that are not supported in Uruguay will return an empty collection
 // For example, American Express cards are not supported in Uruguay and "377400111111115" is a valid Amex card number
-cardExpert.detectBrand(cardNumber = "377400111111115") // returns []
+cardExpert.detectBrand(binNumber = "377400") // returns []
 
 // Invalid values will return an empty collection
-cardExpert.detectBrand(cardNumber = "HELLO") // returns []
+cardExpert.detectBrand(binNumber = "HELLO") // returns []
 
 // An empty card number will return all brands supported in this Uruguay
-cardExpert.detectBrand(cardNumber = "") // returns [Visa, Oca, Mastercard, Diners, Lider, Visa Débito, Mastercard Débito, Maestro]
+cardExpert.detectBrand(binNumber = "") // returns [Visa, Oca, Mastercard, Diners, Lider, Visa Débito, Mastercard Débito, Maestro]
 ```
 
 ## Fields Validation
+
+### Validate holder name
+
+```kotlin
+cardExpert.validateName(holderName = "John Doe") // true
+cardExpert.validateName(holderName = "") // false
+cardExpert.validateName(holderName = " ") // false
+cardExpert.validateName(holderName = "John Doe 2") // false
+cardExpert.validateName(holderName = "John Doe!") // false
+```
+
 
 ### Validate a card number
 
@@ -252,7 +263,7 @@ cardExpert.validateExpirationDate(expirationDate = "8/2022") // false
 The following will validate the security code using standard security code rules:
 
 ```kotlin
-val brands = cardExpert.detectBrand(cardNumber = "4242 4242 4242 4242") // returns [Visa]
+val brands = cardExpert.detectBrand(binNumber = "4242 42") // returns [Visa]
 
 cardExpert.validateSecurityCode(securityCode = "", brands = brands) // false
 cardExpert.validateSecurityCode(securityCode = "1", brands = brands) // false
