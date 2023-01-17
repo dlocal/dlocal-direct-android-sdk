@@ -5,32 +5,33 @@ includes card utility methods, like card detection, validation and formatting.
 
 ## Table of Contents
 
-1. [ Requirements ](#markdown-header-requirements)
-2. [ Installation ](#markdown-header-installation)
-3. [ Getting Started ](#markdown-header-getting-started)
-    - [ Initialize the SDK ](#markdown-header-initialize-the-sdk)
-    - [ Testing the integration ](#markdown-header-testing-the-integration)
-4. [ Tokenize Card ](#markdown-header-tokenize-card)
-    - [ Create a Card Token ](#markdown-header-create-a-card-token)
-    - [ Get Bin Information ](#markdown-header-get-bin-information)
-    - [ Create Installments Plan ](#markdown-header-sample-app)
-5. [ Brand Detection ](#markdown-header-brand-detection)
-    - [ Browse cards brands ](#markdown-header-browse-cards-brands)
-    - [ Detect brands from card number ](#markdown-header-detect-brands-from-card-number)
-6. [ Fields Validation ](#markdown-header-fields-validation)
-    - [ Possible results ](#markdown-header-possible-results)
-    - [ Validate a card number ](#markdown-header-validate-a-card-number)
-    - [ Validate expiration date ](#markdown-header-validate-expiration-date)
-    - [ Validate security code ](#markdown-header--alidate-security-code)
-7. [ Input Formatting ](#markdown-header-input-formatting)
-    - [ Format a card number ](#markdown-header-format-a-card-number)
-    - [ Format card number with last numbers ](#markdown-header-format-card-number-with-last-numbers)
-    - [ Format expiration date ](#markdown-header-format-expiration-date)
-    - [ Format expiration month and year (separated fields) ](#markdown-header-format-expiration-month-and-year-(separated-fields))
-    - [ Format security code ](#markdown-header-format-security-code)
-8. [ Sample App ](#markdown-header-sample-app)
-9. [ Report Issues ](#markdown-header-report-issues)
-10. [ License ](#markdown-header-license)
+1. [Requirements](#requirements)
+2. [Installation](#installation)
+3. [Getting Started](#getting-started)
+    - [Initialize the SDK](#initialize-the-sdk)
+    - [Testing the integration](#testing-the-integration)
+4. [Tokenize Card](#tokenize-card)
+    - [Create a Card Token](#create-a-card-token)
+    - [Get Bin Information](#get-bin-information)
+    - [Create Installments Plan](#create-installments-plan)
+5. [Brand Detection](#brand-detection)
+    - [Browse cards brands](#browse-cards-brands)
+    - [Detect brands from card number](#detect-brands-from-card-number)
+    - [Card image for the detected brand](#card-image-for-the-detected-brand)
+6. [Fields Validation](#fields-validation)
+    - [Validate holder name](#validate-holder-name)
+    - [Validate a card number](#validate-a-card-number)
+    - [Validate expiration date](#validate-expiration-date)
+    - [Validate security code](#validate-security-code)
+7. [Input Formatting](#input-formatting)
+    - [Format a card number](#format-a-card-number)
+    - [Format card number with last numbers](#format-card-number-with-last-numbers)
+    - [Format expiration date](#format-expiration-date)
+    - [Format expiration month and year (separated fields)](#format-expiration-month-and-year-(separated-fields))
+    - [Format security code](#format-security-code)
+8. [Sample App](#sample-app)
+9. [Report Issues](#report-issues)
+10. [License](#license)
 
 ## Requirements
 
@@ -56,7 +57,7 @@ Add dLocal Direct SDK dependency to the application's [build.gradle](https://bit
 ```groovy
 dependencies {
    ... 
-   implementation 'com.dlocal.android:dlocal-direct:0.2.1' 
+   implementation 'com.dlocal.android:dlocal-direct:0.3.2' 
    ...
 }    
 ```  
@@ -215,6 +216,23 @@ cardExpert.detectBrand(binNumber = "HELLO") // returns []
 
 // An empty card number will return all brands supported in this Uruguay
 cardExpert.detectBrand(binNumber = "") // returns [Visa, Oca, Mastercard, Diners, Lider, Visa Débito, Mastercard Débito, Maestro]
+```
+
+### Card image for the detected brand
+
+You can access various image URLs for different sizes and resolutions using the `cardImage` method in the detected brand:
+
+```kotlin
+val brand = cardExpert.detectBrand(binNumber = "4242 4242 4242 4242")
+
+// Image URL of size Small, XHDPI resolution and background
+val xhdpiSmall = brand.cardImage(density = DLImageDensity.XHDPI, size = DLImageSize.SMALL, background = true)
+
+// Image URL of size Small, HDPI resolution and no background
+val hdpiSmall = brand.cardImage(density = DLImageDensity.HDPI, size = DLImageSize.SMALL, background = false)
+
+// Image URL of size Medium, LDPI resolution and background
+val ldpiMedium = brand.cardImage(density = DLImageDensity.LDPI, size = DLImageSize.MEDIUM, background = true)
 ```
 
 ## Fields Validation
