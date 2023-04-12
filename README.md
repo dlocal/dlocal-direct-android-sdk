@@ -43,7 +43,7 @@ includes card utility methods, like card detection, validation and formatting.
 New releases of the dLocal Direct SDK are published via [Maven Repository](https://mvnrepository.com/artifact/com.dlocal.android/dlocal-direct).  
 The latest version is available via `mavenCentral()`.
 
-Add `mavenCentral()` to the project level [build.gradle](https://bitbucket.org/dlocal-public/dlocal-direct-android-sdk/src/master/build.gradle#lines-5) file's repositories section, if you don't have it already:
+Add `mavenCentral()` to the project level [build.gradle]() file's repositories section, if you don't have it already:
 
 ```groovy
 repositories {
@@ -52,12 +52,12 @@ repositories {
 }
 ```
 
-Add dLocal Direct SDK dependency to the application's [build.gradle](https://bitbucket.org/dlocal-public/dlocal-direct-android-sdk/src/master/app/build.gradle#lines-38) file:
+Add dLocal Direct SDK dependency to the application's [build.gradle]() file:
 
 ```groovy
 dependencies {
    ... 
-   implementation 'com.dlocal.android:dlocal-direct:0.3.2' 
+   implementation 'com.dlocal.android:dlocal-direct:0.4.0' 
    ...
 }    
 ```  
@@ -94,7 +94,7 @@ val dlocal = if (BuildConfig.DEBUG) {
 
 Replacing the `apiKey` with yours for each environment.
 
-See the [SampleApplication](https://bitbucket.org/dlocal-public/dlocal-direct-android-sdk/src/master/app/src/main/java/com/dlocal/sampleapp/SampleApplication.kt) for a detailed example.
+See the [SampleApplication]() for a detailed example.
 
 ## Tokenize Card
 
@@ -301,6 +301,14 @@ cardExpert.validateSecurityCode(securityCode = "123", brands = uruguayBrands) //
 cardExpert.validateSecurityCode(securityCode = "1234", brands = uruguayBrands) // false as there is no supported card in Uruguay that allows security code length of four digits
 ```
 
+If your brands list is empty or null, the validation will use the default Brand which has a security code of only digits with minimum length of 3 and maximum of 4.
+```kotlin
+cardExpert.validateSecurityCode(securityCode = "123", brands = null) // true
+cardExpert.validateSecurityCode(securityCode = "12", brands = null) // false, minimum length is 3
+cardExpert.validateSecurityCode(securityCode = "1234", brands = emptyList()) // true
+cardExpert.validateSecurityCode(securityCode = "12345", brands = emptyList()) // false, maximum length is 4
+```
+
 ## Input Formatting
 
 ### Format a card number
@@ -412,16 +420,16 @@ cardExpert.formatSecurityCode(code = "12 ", brand = diners) // returns "12" (spa
 cardExpert.formatSecurityCode(code = "12A", brand = diners) // returns "12" (non numeric characters are removed)
 ```
 
-If you don't yet know the brand you can instead use a `DLCardCodeFormatter` as follows:
+If you pass `null` brand, the formatter will use the default Brand which has a security code of only digits with minimum length of 3 and maximum of 4.
 
 ```kotlin
-val securityCodeFormatter = DLCardCodeFormatter(sizes = listOf(3, 4)) // Allow security codes of three or four numbers
-cardExpert.formatSecurityCode(code = "1234", formatter = securityCodeFormatter) // returns "1234"
+cardExpert.formatSecurityCode(code = "1A234B56", brand = null) // returns "1234"
+cardExpert.formatSecurityCode(code = "00 1 3", brand = null) // returns "0013"
 ```
 
 ## Sample App
 
-In this repository there's a [sample app](https://bitbucket.org/dlocal-public/dlocal-direct-android-sdk/src/master/app/) to showcase how to use the SDK, please refer to the code for more detailed examples.
+In this repository there's a [sample app]() to showcase how to use the SDK, please refer to the code for more detailed examples.
 
 ## Report Issues
 
