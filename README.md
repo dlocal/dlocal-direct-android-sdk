@@ -57,7 +57,7 @@ Add dLocal Direct SDK dependency to the application's [build.gradle]() file:
 ```groovy
 dependencies {
    ... 
-   implementation 'com.dlocal.android:dlocal-direct:0.4.1' 
+   implementation 'com.dlocal.android:dlocal-direct:SDK_VERSION' 
    ...
 }    
 ```  
@@ -427,15 +427,15 @@ cardExpert.formatSecurityCode(code = "1A234B56", brand = null) // returns "1234"
 cardExpert.formatSecurityCode(code = "00 1 3", brand = null) // returns "0013"
 ```
 
-## Sample App
+# API Reference
 
-In this repository there's a [sample app]() to showcase how to use the SDK, please refer to the code for more detailed examples.
+[View documentation](https://dlocal.github.io/dlocal-direct-android-sdk/)
 
-## Report Issues
+# Report Issues
 
 If you have a problem or find an issue with the SDK please contact us at [mobile-dev@dlocal.com](mailto:mobile-dev@dlocal.com).
 
-## License
+# License
 
 ```text
     MIT License
