@@ -29,9 +29,8 @@ includes card utility methods, like card detection, validation and formatting.
     - [Format expiration date](#format-expiration-date)
     - [Format expiration month and year (separated fields)](#format-expiration-month-and-year-(separated-fields))
     - [Format security code](#format-security-code)
-8. [Sample App](#sample-app)
-9. [Report Issues](#report-issues)
-10. [License](#license)
+8. [Report Issues](#report-issues)
+9. [License](#license)
 
 ## Requirements
 
@@ -48,7 +47,6 @@ Add `mavenCentral()` to the project level [build.gradle]() file's repositories s
 ```groovy
 repositories {
    mavenCentral()
-   ...
 }
 ```
 
@@ -56,9 +54,7 @@ Add dLocal Direct SDK dependency to the application's [build.gradle]() file:
 
 ```groovy
 dependencies {
-   ... 
-   implementation 'com.dlocal.android:dlocal-direct:0.4.5' 
-   ...
+   implementation 'com.dlocal.android:dlocal-direct:0.4.6'
 }    
 ```  
 
@@ -85,10 +81,10 @@ You can specify to use a different environment with the `testMode` param, which 
 ```kotlin
 import com.dlocal.direct.DLCardTokenizer  
 
-val dlocal = if (BuildConfig.DEBUG) {
+val dlocal = if (BuildConfig.DEBUG) { 
     DLCardTokenizer(apiKey = "SBX API KEY", country = "US", testMode = true)
-} else {
-	DLCardTokenizer(apiKey = "PROD API KEY", country = "US", testMode = false)
+} else { 
+    DLCardTokenizer(apiKey = "PROD API KEY", country = "US", testMode = false)
 }
 ```
 
