@@ -29,8 +29,9 @@ includes card utility methods, like card detection, validation and formatting.
     - [Format expiration date](#format-expiration-date)
     - [Format expiration month and year (separated fields)](#format-expiration-month-and-year-(separated-fields))
     - [Format security code](#format-security-code)
-8. [Report Issues](#report-issues)
-9. [License](#license)
+8. [Card Data Sync](#card-data-sync)
+9. [Report Issues](#report-issues)
+10. [License](#license)
 
 ## Requirements
 
@@ -54,7 +55,7 @@ Add dLocal Direct SDK dependency to the application's [build.gradle]() file:
 
 ```groovy
 dependencies {
-   implementation 'com.dlocal.android:dlocal-direct:0.4.7'
+   implementation 'com.dlocal.android:dlocal-direct:0.5.0'
 }    
 ```  
 
@@ -135,12 +136,14 @@ dlocal.getBinInformation(
 ```kotlin
 import com.dlocal.direct.DLCardTokenizer
 
-dlocal.createInstallmentsPlan(
+dlocal.getBinInformation(
     binNumber = "BIN-NUMBER",
     currencyCode = "CURRENCY-CODE",
     amount = 500.0,
-    onSuccess = { installments ->
-        println("Successfully created installments plan: ${installments.id}")
+    onSuccess = { binInfo ->
+        binInfo.installments?.let { plan ->
+            println("Successfully created installments plan: ${plan.id}")
+        }
     },
     onError = { error ->
         println("Failed to create installments plan: ${error.debugMessage}")
@@ -426,6 +429,32 @@ cardExpert.formatSecurityCode(code = "00 1 3", brand = null) // returns "0013"
 # API Reference
 
 [View documentation](https://dlocal.github.io/dlocal-direct-android-sdk/)
+
+# Card Data Sync
+
+This library comes bundled with a list of supported cards by country. When this list is updated (e.g. we add support for Amex in Uruguay) you'll have to pull the latest version of the library (which comes bundled with this new card) and deploy a new version of your app.
+
+You can use our Sync feature to get OTA updates and bypass this limitation.
+
+```kotlin
+// Create an instance of DLCardSync
+val cardSync = DLCardSync(testMode = true)
+
+// Initiate the syncing process 
+cardSync.sync { message, finished ->
+   println(message)
+   
+   if (finished) {
+       println("Sync process has been finished")
+   }
+}
+```
+
+We recommend you attach this code previous to using any of the card expert functionalities.
+
+### Important: You need to opt-in to Sync
+
+This feature is OFF by default. You'll have to manually initiate the sync process.
 
 # Report Issues
 
