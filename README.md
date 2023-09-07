@@ -27,7 +27,7 @@ includes card utility methods, like card detection, validation and formatting.
     - [Format a card number](#format-a-card-number)
     - [Format card number with last numbers](#format-card-number-with-last-numbers)
     - [Format expiration date](#format-expiration-date)
-    - [Format expiration month and year (separated fields)](#format-expiration-month-and-year-(separated-fields))
+    - [Format expiration month and year as separated fields](#format-expiration-month-and-year-as-separated-fields)
     - [Format security code](#format-security-code)
 8. [Card Data Sync](#card-data-sync)
 9. [Report Issues](#report-issues)
@@ -55,7 +55,7 @@ Add dLocal Direct SDK dependency to the application's [build.gradle]() file:
 
 ```groovy
 dependencies {
-   implementation 'com.dlocal.android:dlocal-direct:0.5.3'
+   implementation 'com.dlocal.android:dlocal-direct:0.5.4'
 }    
 ```  
 
@@ -365,7 +365,7 @@ cardExpert.formatExpirationDate(date = "2205") // returns "02/20"
 cardExpert.formatExpirationDate(date = "1222") // returns "12/22"
 ```
 
-### Format expiration month and year (separated fields)
+### Format expiration month and year as separated fields
 
 If your form has separated fields for month and year, you will want to use these methods for formatting the input. Formatting includes normalization of values to match card formatting rules (e.g. turning "2" into "02") and some validation (e.g. disallow input of non numeric characters, disallow input of more than two characters for months, etc).
 
