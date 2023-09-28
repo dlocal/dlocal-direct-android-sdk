@@ -55,7 +55,7 @@ Add dLocal Direct SDK dependency to the application's [build.gradle]() file:
 
 ```groovy
 dependencies {
-   implementation 'com.dlocal.android:dlocal-direct:0.5.4'
+   implementation 'com.dlocal.android:dlocal-direct:0.6.0'
 }    
 ```  
 
@@ -438,7 +438,7 @@ You can use our Sync feature to get OTA updates and bypass this limitation.
 
 ```kotlin
 // Create an instance of DLCardSync
-val cardSync = DLCardSync(testMode = true)
+val cardSync = DLCardSync(apiKey = "API_KEY", countryCode = "US", testMode = true)
 
 // Initiate the syncing process 
 cardSync.sync { message, finished ->
