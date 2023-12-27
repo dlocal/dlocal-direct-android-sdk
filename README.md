@@ -55,7 +55,7 @@ Add dLocal Direct SDK dependency to the application's [build.gradle]() file:
 
 ```groovy
 dependencies {
-   implementation 'com.dlocal.android:dlocal-direct:1.0.3'
+   implementation 'com.dlocal.android:dlocal-direct:1.1.0'
 }    
 ```  
 
@@ -424,6 +424,16 @@ If you pass `null` brand, the formatter will use the default Brand which has a s
 ```kotlin
 cardExpert.formatSecurityCode(code = "1A234B56", brand = null) // returns "1234"
 cardExpert.formatSecurityCode(code = "00 1 3", brand = null) // returns "0013"
+```
+
+### Format card holder names
+
+Card holder names can also be formatted to be uppercase with no special characters and no extra spaces.
+
+```kotlin
+cardExpert.formatHolderName(name = "John Doe") // returns "JOHN DOE"
+cardExpert.formatHolderName(name = " Pablo -4_ Picasso  ") // returns "PABLO PICASSO"
+cardExpert.formatHolderName(name = "James R. H. Thomson") // returns "JAMES R H THOMSON"
 ```
 
 # API Reference
