@@ -55,7 +55,7 @@ Add dLocal Direct SDK dependency to the application's [build.gradle]() file:
 
 ```groovy
 dependencies {
-   implementation 'com.dlocal.android:dlocal-direct:1.1.0'
+   implementation 'com.dlocal.android:dlocal-direct:SDK_VERSION'
 }    
 ```  
 
@@ -239,11 +239,11 @@ val ldpiMedium = brand.cardImage(density = DLImageDensity.LDPI, size = DLImageSi
 ### Validate holder name
 
 ```kotlin
-cardExpert.validateName(holderName = "John Doe") // true
-cardExpert.validateName(holderName = "") // false
-cardExpert.validateName(holderName = " ") // false
-cardExpert.validateName(holderName = "John Doe 2") // false
-cardExpert.validateName(holderName = "John Doe!") // false
+cardExpert.validateHolderName(holderName = "John Doe") // true
+cardExpert.validateHolderName(holderName = "") // false
+cardExpert.validateHolderName(holderName = " ") // false
+cardExpert.validateHolderName(holderName = "John Doe 2") // false
+cardExpert.validateHolderName(holderName = "John Doe!") // false
 ```
 
 
@@ -262,6 +262,8 @@ cardExpert.validateCardNumber(cardNumber = "4A") // false
 ### Validate expiration date
 
 ```kotlin
+// Assume below calls are done on August 2022 (08/22)
+
 cardExpert.validateExpirationDate(expirationDate = "") // false
 cardExpert.validateExpirationDate(expirationDate = "0") // false
 cardExpert.validateExpirationDate(expirationDate = "02") // false
@@ -276,6 +278,9 @@ cardExpert.validateExpirationDate(expirationDate = "8/2022") // false
 ```
 
 ### Validate security code
+
+The security code can be validated using the cvv number alone, 
+the cvv number and a brand or the cvv number and a list of brands.
 
 The following will validate the security code using standard security code rules:
 
@@ -341,11 +346,11 @@ If you want to display a card identified by last numbers, you can use this optio
 ```kotlin
 val diners = cardExpert.brand(withIdentifier = DLCardBrandIdentifier.DINERS_CLUB)
 
-cardExpert.formatCardEndingWith(ending = "1234", brand = diners) // returns "**** ****** 1234"
-cardExpert.formatCardEndingWith(ending = "234", brand = diners) // returns "**** ****** *234"
-cardExpert.formatCardEndingWith(ending = "34", brand = diners) // returns "**** ****** **34"
-cardExpert.formatCardEndingWith(ending = "4", brand = diners) // returns "**** ****** ***4"
-cardExpert.formatCardEndingWith(ending = "", brand = diners) // returns "**** ****** ****"
+cardExpert.formatCardNumberEndingWith(ending = "1234", brand = diners) // returns "**** ****** 1234"
+cardExpert.formatCardNumberEndingWith(ending = "234", brand = diners) // returns "**** ****** *234"
+cardExpert.formatCardNumberEndingWith(ending = "34", brand = diners) // returns "**** ****** **34"
+cardExpert.formatCardNumberEndingWith(ending = "4", brand = diners) // returns "**** ****** ***4"
+cardExpert.formatCardNumberEndingWith(ending = "", brand = diners) // returns "**** ****** ****"
 ```
 
 ### Format expiration date
@@ -405,7 +410,10 @@ cardExpert.formatExpirationYear(year = "202A") // returns "202" (does not allow 
 
 ### Format security code
 
-Different card brands have different rules for security code validation. This is why we ask you to input the brand for which you are formatting the code.
+Different card brands have different rules for security code validation. 
+This is why we ask you to input the brand for which you are formatting the code.
+Still the validator can be used without imputing a brand, this way it only checks that 
+the cvv code is between 3 and 4 digits long.
 
 ```kotlin
 val diners = cardExpert.brand(withIdentifier = DLCardBrandIdentifier.DINERS_CLUB)
@@ -419,11 +427,27 @@ cardExpert.formatSecurityCode(code = "12 ", brand = diners) // returns "12" (spa
 cardExpert.formatSecurityCode(code = "12A", brand = diners) // returns "12" (non numeric characters are removed)
 ```
 
-If you pass `null` brand, the formatter will use the default Brand which has a security code of only digits with minimum length of 3 and maximum of 4.
+If you pass only the security code or `null` brand, the formatter will 
+use the default Brand which has a security code of only 
+digits with minimum length of 3 and maximum of 4.
 
 ```kotlin
 cardExpert.formatSecurityCode(code = "1A234B56", brand = null) // returns "1234"
 cardExpert.formatSecurityCode(code = "00 1 3", brand = null) // returns "0013"
+cardExpert.formatSecurityCode(code = "123") // returns "123"
+cardExpert.formatSecurityCode(code = "1234") // returns "1234"
+cardExpert.formatSecurityCode(code = "12345") // returns "1234" (security code limited to 4 digits)
+cardExpert.formatSecurityCode(code = "123A") // returns "123" (non numeric characters are removed)
+```
+
+### Format card holder names
+
+Card holder names can also be formatted to be uppercase with no special characters and no extra spaces.
+
+```kotlin
+cardExpert.formatHolderName(name = "John Doe") // returns "JOHN DOE"
+cardExpert.formatHolderName(name = " Pablo -4_ Picasso  ") // returns "PABLO PICASSO"
+cardExpert.formatHolderName(name = "James R. H. Thomson") // returns "JAMES R H THOMSON"
 ```
 
 ### Format card holder names
@@ -447,20 +471,60 @@ This library comes bundled with a list of supported cards by country. When this 
 You can use our Sync feature to get OTA updates and bypass this limitation.
 
 ```kotlin
+import com.dlocal.direct.DLCardSync
+
 // Create an instance of DLCardSync
 val cardSync = DLCardSync(apiKey = "API_KEY", countryCode = "US", testMode = true)
 
 // Initiate the syncing process 
-cardSync.sync { message, finished ->
-   println(message)
-   
-   if (finished) {
-       println("Sync process has been finished")
+cardSync.sync { result ->
+   if (result.isSuccess) {
+      println("Sync process has been finished")
+      println(result.getOrNull())
+   } else {
+      println("Sync process has failed")
+      println(result.exceptionOrNull()?.message)
    }
 }
 ```
 
 We recommend you attach this code previous to using any of the card expert functionalities.
+
+### Sync Date
+
+You can check the last time the list of supported cards was synced using the lastSyncDate property.
+
+```kotlin
+
+val cardSync = DLCardSync(apiKey = "API_KEY", countryCode = "US", testMode = true)
+
+val lastSyncDate = cardSync.lastSyncDate
+
+```
+
+### Sync log
+
+Contains log information about the sync process, useful for debugging.
+
+```kotlin
+
+val cardSync = DLCardSync(apiKey = "API_KEY", countryCode = "US", testMode = true)
+
+val syncLog = cardSync.syncLog
+
+```
+
+### Sync state
+
+Boolean that provides information about the current state of synchronization 
+
+```kotlin
+
+val cardSync = DLCardSync(apiKey = "API_KEY", countryCode = "US", testMode = true)
+
+val isSyncing = cardSync.isSyncing
+
+```
 
 ### Important: You need to opt-in to Sync
 
